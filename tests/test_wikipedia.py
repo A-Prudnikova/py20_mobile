@@ -1,16 +1,33 @@
 import allure
 from allure_commons._allure import step
 from appium.webdriver.common.appiumby import AppiumBy
-from selene import have
-from selene.support.shared import browser
+from selene import have, be
+from tests.conftest import *
 
 
-@allure.tag('mobile')
-@allure.title('Test search')
-def test_wiki_browserstack(create_driver):
-    with step('Type search'):
-        browser.element((AppiumBy.ACCESSIBILITY_ID, 'Search Wikipedia')).click()
-        browser.element((AppiumBy.ID, "org.wikipedia.alpha:id/search_src_text")).type('BrowserStack')
-    with step('Verify content found'):
-        browser.all((AppiumBy.ID, 'org.wikipedia.alpha:id/page_list_item_title'))\
-            .should(have.size_greater_than(0))
+@allure.tag('Android mobile Pixel 4 XL')
+@allure.title('Skip start screens')
+def test_skip_screens():
+    with step('First page checking'):
+        browser.element((AppiumBy.ID, "org.wikipedia.alpha:id/primaryTextView")) \
+            .should(have.text("The Free Encyclopedia"))
+        browser.element((AppiumBy.ID, "org.wikipedia.alpha:id/fragment_onboarding_forward_button")).click()
+
+    with step('Second page checking'):
+        browser.element((AppiumBy.ID, "org.wikipedia.alpha:id/primaryTextView")) \
+            .should(have.text("New ways to explore"))
+        browser.element((AppiumBy.ID, "org.wikipedia.alpha:id/fragment_onboarding_forward_button")).click()
+
+    with step('Third page checking'):
+        browser.element((AppiumBy.ID, "org.wikipedia.alpha:id/primaryTextView")) \
+            .should(have.exact_text("Reading lists with sync"))
+        browser.element((AppiumBy.ID, "org.wikipedia.alpha:id/fragment_onboarding_forward_button")).click()
+
+    with step('Fourth page checking'):
+        browser.element((AppiumBy.ID, "org.wikipedia.alpha:id/primaryTextView")) \
+            .should(have.text("Send anonymous data"))
+        browser.element((AppiumBy.ID, "org.wikipedia.alpha:id/fragment_onboarding_done_button")).click()
+        browser.element((AppiumBy.ID, "org.wikipedia.alpha:id/search_container")) \
+            .should(be.visible)
+
+    browser.quit()
